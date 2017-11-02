@@ -1,15 +1,53 @@
 class Empleado {
 	var rol
 	var estamina
+	var tareas
 	constructor(_rol,_estamina){
 		rol = _rol
-		estamina = _estamina
+		estamina = _estamina.min(10)
+	}
+	method comerFruta (fruta){
+		estamina = self.getEstamina() +fruta.puntosRecuperados()
+	}
+	method experiencia(){
+		return tareas.size() * self.dificultadAcumulada()
+	}
+	method dificultadAcumulada(){
+		return tareas.sum{t => t.getDificultad(self)}
 	}
 	method getRol(){
 		return rol
 	}
+	
+	
+	method hacerTarea(tarea){
+		if(not tarea.puedoHacerla()){
+			throw new NoPuedeHacerTarea()
+		}
+		else{
+			tareas.add(tarea)
+			tarea.hacetePor(self)
+		}
+	}
+	
+	method tieneHerramientas(){
+		rol.getHerramientas() //all
+	}
+	method perderEstamina(cuanto){
+		estamina -= cuanto
+	}
+	
+	
+	method puedeDefenderSector(){
+		return rol.puedeDefender()
+	}
+	
+	
 	method getFuerzaBase(){
 		return self.getEstamina() /2 +2
+	}
+	method getTareas(){
+		return tareas
 	}
 	method getFuerza(){
 		return rol.fuerzaFinal(self.getFuerzaBase())
@@ -18,9 +56,28 @@ class Empleado {
 		return estamina
 	}
 }
+object banana{
+	method puntosRecuperados(){
+		return 10
+	}
+}
+object manzana{
+	method puntosRecuperados(){
+		return 5
+	}
+}
+object uva{
+	method puntosRecuperados(){
+	return 1	
+	}
+	
+}
 
 class Bicliclope inherits Empleado{
 	constructor (rol,estamina) = super(rol,estamina){
+		
+	}
+	method factorDevilidad(){
 		
 	}
 	
@@ -32,39 +89,58 @@ class Ciclope inherits Empleado{
 	override method getFuerza(){
 		return super()/2 
 		}
+	method factorDevilidad(){
+		
+	}
 }
 
+class NoPuedeHacerTarea inherits Exception{
+	
+}
 class Rol {
-	method getHerramientas()
+	
 	method fuerzaFinal(fuerzaBase){
 		return fuerzaBase
 	}
+	
+	method puedeDefender()
+	
 }
 
 class Soldado inherits Rol{
 	var arma
-	var practica
-	method fuerza(fuerzaBase){
-		return practica + fuerzaBase
+	var practica =0
+	override method fuerzaFinal (fuerzaBase){
+		return  fuerzaBase +2
+	}
+	
+	override method puedeDefender(){
+		return true
 	}
 }
 class Obrero inherits Rol{
 	var herramientas
+	override method puedeDefender(){
+		return true
+	}
 	
-	override method getHerramientas(){
-		return herramientas
+	override method fuerzaFinal(f){
+		return 0
 	}
 	
 }
-class Mucama{
+class Mucama inherits Rol{
 	var manosLimpias
+	override method puedeDefender(){
+		return false
+	}
+	override method fuerzaFinal(f){
+		return 0
+	}
 }
 
 class Cientifico{
-	method arreglaMaquina(empleado,maquina){
-		if (empleado.estamina() == maquina.complejidad() && empleado.herramientas() == maquina.herramientasRequeridas())
-		
-	}
+	
 }
 
 class Maquina{
@@ -81,15 +157,3 @@ class Maquina{
 	}
 }
 
-class Tarea {
-	var dificultad
-	var empleado
-	var maquina
-	constructor (_empleado,_maquina){
-		empleado = _empleado
-		maquina = _maquina
-	}
-	//ArreglarMaquina = new Tarea(empleado)
-	//arreglarMaquina.
-	method realizarTarea()
-}
